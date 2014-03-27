@@ -11,7 +11,7 @@ var chromeSmoothScroll = function(){
 	var settings = {
 		counter            : 0,
 		minVal             : 0,
-		maxVal             : $(window).height(),
+		maxVal             : $('html').height(),
 		scrolling          : null,
 		speed              : 800,
 		offset             : 100,
@@ -19,7 +19,8 @@ var chromeSmoothScroll = function(){
 		animTimeOut        : 50,
 		mainTriggerElem    : 'html',
 		animateTriggerElem : 'html, body',
-		tempPos			   : 0
+		tempPos			   : 0,
+		animating		   : false
 	},
 
 	init = function(){
@@ -35,18 +36,20 @@ var chromeSmoothScroll = function(){
 			else if( e.originalEvent.wheelDelta  < 0 ) settings.counter++;
 
 			if( settings.counter < settings.minVal ) settings.counter = 0;
-			else if( settings.counter > settings.maxVal ) settings.counter = settings.maxVal;
+			else if( settings.counter * settings.offset > settings.maxVal ) settings.counter = settings.maxVal / settings.offset;
 
-			if( settings.tempPos != settings.counter ) {
-				clearTimeout(settings.scrolling);
-				doScroll();	
-			}
+			if( settings.tempPos != settings.counter ) doScroll();
 
 		});
 
 		$(window).scroll(function(event) {
-			updateCounter();
+			if( settings.animating == false ) {
+				var updateTimeout = null;
+				clearTimeout(updateTimeout);
+				updateTimeout = setTimeout(updateCounter, 1000);
+			}
 		});
+		
 	},
 
 	updateCounter = function(){
@@ -54,8 +57,16 @@ var chromeSmoothScroll = function(){
 	},
 
 	doScroll = function(){
+		clearTimeout(settings.scrolling);
 		settings.scrolling = setTimeout(function(){
-			$(settings.animateTriggerElem).stop().animate({ scrollTop: settings.counter * settings.offset }, settings.speed, function(){ settings.tempPos = settings.counter });
+			settings.animating = true;
+			$(settings.animateTriggerElem).stop().animate({ 
+				scrollTop: settings.counter * settings.offset 
+			}, settings.speed, 
+			function(){ 
+				settings.tempPos = settings.counter; 
+				settings.animating = false;
+			});
 		}, settings.animTimeOut);
 	},
 
