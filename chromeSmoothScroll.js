@@ -37,8 +37,6 @@ var chromeSmoothScroll = function(){
 			if( settings.counter < settings.minVal ) settings.counter = 0;
 			else if( settings.counter > settings.maxVal ) settings.counter = settings.maxVal;
 
-			console.log( settings.counter );
-
 			if( settings.tempPos != settings.counter ) {
 				clearTimeout(settings.scrolling);
 				doScroll();	
