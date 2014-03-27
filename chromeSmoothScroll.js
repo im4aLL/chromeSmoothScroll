@@ -29,6 +29,10 @@ var chromeSmoothScroll = function(){
 		$(settings.mainTriggerElem).bind('mousewheel', function(e){ 
 			e.preventDefault();
 
+			$(window).load(function(){ 
+				settings.maxVal = $('html').height() < $(window).height() ? $(window).height() : $('html').height();
+			});
+
 			if( settings.scrollHappen == false && $(window).scrollTop() != 0 ) updateCounter();
 			settings.scrollHappen = true;
 
