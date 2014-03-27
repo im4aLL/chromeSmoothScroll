@@ -11,7 +11,7 @@ var chromeSmoothScroll = function(){
 	var settings = {
 		counter            : 0,
 		minVal             : 0,
-		maxVal             : $('html').height(),
+		maxVal             : $(window).height() + 500,
 		scrolling          : null,
 		speed              : 800,
 		offset             : 100,
