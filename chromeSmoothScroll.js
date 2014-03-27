@@ -51,6 +51,8 @@ var chromeSmoothScroll = function(){
 				updateTimeout = setTimeout(updateCounter, 1000);
 			}
 		});
+
+		keyboard();
 		
 	},
 
@@ -79,6 +81,26 @@ var chromeSmoothScroll = function(){
 
 	isChrome = function(){
 		return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+	},
+
+	keyboard = function(){
+		$(settings.mainTriggerElem).keydown(function (e) {
+		    switch (e.which) {
+		        case 38:
+		            $(settings.animateTriggerElem).stop().animate({
+		                scrollTop: $(window).scrollTop() - settings.offset * 2
+		            }, settings.speed);
+		            break;
+
+		        case 40:
+		            $(settings.animateTriggerElem).stop().animate({
+		                scrollTop: $(window).scrollTop() + settings.offset * 2
+		            }, settings.speed);
+		            break;
+		    }
+		    
+		    if(e.which == 38 || e.which == 40) return false;
+		});
 	};
 
 	return { init : init };
