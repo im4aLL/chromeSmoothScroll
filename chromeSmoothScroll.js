@@ -20,7 +20,8 @@ var chromeSmoothScroll = function(){
 		mainTriggerElem    : 'html',
 		animateTriggerElem : 'html, body',
 		tempPos			   : 0,
-		animating		   : false
+		animating		   : false,
+		updatedMaxVal      : false
 	},
 
 	init = function(){
@@ -28,10 +29,7 @@ var chromeSmoothScroll = function(){
 
 		$(settings.mainTriggerElem).bind('mousewheel', function(e){ 
 			e.preventDefault();
-
-			$(window).load(function(){ 
-				settings.maxVal = $('html').height() < $(window).height() ? $(window).height() : $('html').height();
-			});
+			if(!settings.updatedMaxVal) updateMaxVal();
 
 			if( settings.scrollHappen == false && $(window).scrollTop() != 0 ) updateCounter();
 			settings.scrollHappen = true;
@@ -54,6 +52,11 @@ var chromeSmoothScroll = function(){
 			}
 		});
 		
+	},
+
+	updateMaxVal = function(){
+		settings.maxVal = $('html').height() < $(window).height() ? $(window).height() : $('html').height();
+		settings.updatedMaxVal = true;
 	},
 
 	updateCounter = function(){
