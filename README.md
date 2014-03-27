@@ -17,4 +17,4 @@ usage
 
 demo
 ====
-http://habibhadi.com/demo/chromeSmoothScroll/(http://habibhadi.com/demo/chromeSmoothScroll/)
+http://habibhadi.com/demo/chromeSmoothScroll/
