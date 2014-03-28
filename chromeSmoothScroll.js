@@ -57,7 +57,7 @@ var chromeSmoothScroll = function(){
 	},
 
 	updateMaxVal = function(){
-		settings.maxVal = $('html').height() < $(window).height() ? $(window).height() : $('html').height();
+		settings.maxVal = $(document).height() < $(window).height() ? $(window).height() : $(document).height();
 		settings.updatedMaxVal = true;
 	},
 
