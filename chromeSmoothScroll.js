@@ -38,9 +38,6 @@ var chromeSmoothScroll = function(){
 			if( settings.scrollHappen == false && $(window).scrollTop() != 0 ) updateCounter();
 			settings.scrollHappen = true;
 
-			if( e.originalEvent.wheelDelta > 0 ) settings.counter--;
-			else if( e.originalEvent.wheelDelta < 0 ) settings.counter++;
-
 			e = e.originalEvent ? e.originalEvent : e;
 			var delta = e.detail ? e.detail*(-40) : e.wheelDelta;
 
