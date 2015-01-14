@@ -21,21 +21,31 @@ var chromeSmoothScroll = function(){
 		animateTriggerElem : 'html, body',
 		tempPos			   : 0,
 		animating		   : false,
-		updatedMaxVal      : false
+		updatedMaxVal      : false,
+		chromeOnly 		   : true
 	},
 
 	init = function(){
-		if( !isChrome() ) return false;
+		if( settings.chromeOnly === true && !isChrome() ) return false;
 
-		$(settings.mainTriggerElem).bind('mousewheel', function(e){ 
+		var eventName = 'mousewheel';
+		if( settings.chromeOnly === false ) eventName += ' DOMMouseScroll';
+
+		$(settings.mainTriggerElem).bind(eventName, function(e){ 
 			e.preventDefault();
 			if(!settings.updatedMaxVal) updateMaxVal();
 
 			if( settings.scrollHappen == false && $(window).scrollTop() != 0 ) updateCounter();
 			settings.scrollHappen = true;
 
-			if( e.originalEvent.wheelDelta  > 0 ) settings.counter--;
-			else if( e.originalEvent.wheelDelta  < 0 ) settings.counter++;
+			if( e.originalEvent.wheelDelta > 0 ) settings.counter--;
+			else if( e.originalEvent.wheelDelta < 0 ) settings.counter++;
+
+			e = e.originalEvent ? e.originalEvent : e;
+			var delta = e.detail ? e.detail*(-40) : e.wheelDelta;
+
+			if( delta > 0 ) settings.counter--;
+			else if( delta < 0 ) settings.counter++;
 
 			if( settings.counter < settings.minVal ) settings.counter = 0;
 			else if( settings.counter * settings.offset > settings.maxVal ) settings.counter = settings.maxVal / settings.offset;

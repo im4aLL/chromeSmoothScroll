@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>smooth scroll</title>
+</head>
+<body>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="chromeSmoothScroll.js"></script>
+
+<script>
+jQuery(document).ready(function($) {
+    // for demo purpose adding paragraphs
+    for(var i=0; i<=100; i++){
+        $('body').append('<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil, sequi velit cum fugit sunt recusandae consequuntur fugiat officiis quae amet facilis at voluptatibus fuga? Nisi iure enim iusto temporibus quaerat.</p>');
+    }
+
+    // calling the plugin
+    chromeSmoothScroll.init();
+});
+</script>
+    
+</body>
+</html>
