@@ -1,114 +1,130 @@
 /**
- * [chromeSmoothScroll Smooth scrolling for Chrome browser]
- * @return {[usage]} [ chromeSmoothScroll.init(); ]
- * @author Habib Hadi
- * @website http://habibhadi.com
- * @email me [at] habibhadi.com
+ * https://github.com/im4aLL/chromeSmoothScroll
  */
 
 var chromeSmoothScroll = function(){
+    'use strict';
 
-	var settings = {
-		counter            : 0,
-		minVal             : 0,
-		maxVal             : $(window).height() + 500,
-		scrolling          : null,
-		speed              : 800,
-		offset             : 100,
-		scrollHappen       : false,
-		animTimeOut        : 50,
-		mainTriggerElem    : 'html',
-		animateTriggerElem : 'html, body',
-		tempPos			   : 0,
-		animating		   : false,
-		updatedMaxVal      : false,
-		chromeOnly 		   : true
-	},
+    var settings = {
+        counter            : 0,
+        minVal             : 0,
+        maxVal             : $(window).height() + 500,
+        speed              : 800,
+        offset             : 100,
+        scrollHappen       : false,
+        mainTriggerElem    : 'html',
+        animateTriggerElem : 'html, body',
+        tempPos            : 0,
+        animating          : false,
+        updatedMaxVal      : false,
+        chromeOnly         : true
+    },
 
-	init = function(){
-		if( settings.chromeOnly === true && !isChrome() ) return false;
+    ticking = false,
 
-		var eventName = 'mousewheel';
-		if( settings.chromeOnly === false ) eventName += ' DOMMouseScroll';
+    init = function(){
+        window.requestAnimFrame = (function(){
+            return  window.requestAnimationFrame       ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame    ||
+                    function( callback ){
+                        window.setTimeout(callback, 1000 / 60);
+                    };
+        })();
 
-		$(settings.mainTriggerElem).bind(eventName, function(e){ 
-			e.preventDefault();
-			if(!settings.updatedMaxVal) updateMaxVal();
+        if( settings.chromeOnly === true && !isChrome() ) {
+            return false;
+        }
 
-			if( settings.scrollHappen == false && $(window).scrollTop() != 0 ) updateCounter();
-			settings.scrollHappen = true;
+        var eventName = 'mousewheel';
+        if( settings.chromeOnly === false ) eventName += ' DOMMouseScroll';
 
-			e = e.originalEvent ? e.originalEvent : e;
-			var delta = e.detail ? e.detail*(-40) : e.wheelDelta;
+        $(settings.mainTriggerElem).bind(eventName, function(e){
+            e.preventDefault();
+            if(!settings.updatedMaxVal) updateMaxVal();
 
-			if( delta > 0 ) settings.counter--;
-			else if( delta < 0 ) settings.counter++;
+            if( settings.scrollHappen === false && $(window).scrollTop() !== 0 ) updateCounter();
+            settings.scrollHappen = true;
 
-			if( settings.counter < settings.minVal ) settings.counter = 0;
-			else if( settings.counter * settings.offset > settings.maxVal ) settings.counter = settings.maxVal / settings.offset;
+            e = e.originalEvent ? e.originalEvent : e;
+            var delta = e.detail ? e.detail*(-40) : e.wheelDelta;
 
-			if( settings.tempPos != settings.counter ) doScroll();
+            if( delta > 0 ) settings.counter--;
+            else if( delta < 0 ) settings.counter++;
 
-		});
+            if( settings.counter < settings.minVal ) settings.counter = 0;
+            else if( settings.counter * settings.offset > settings.maxVal ) settings.counter = settings.maxVal / settings.offset;
 
-		$(window).scroll(function(event) {
-			if( settings.animating == false ) {
-				var updateTimeout = null;
-				clearTimeout(updateTimeout);
-				updateTimeout = setTimeout(updateCounter, 1000);
-			}
-		});
+            if( settings.tempPos != settings.counter ) {
+                if(!ticking) {
+                    requestAnimFrame(function(){
+                        doScroll();
+                    });
+                    ticking = true;
+                }
+            }
 
-		keyboard();
-		
-	},
+        });
 
-	updateMaxVal = function(){
-		settings.maxVal = $(document).height() < $(window).height() ? $(window).height() : $(document).height();
-		settings.updatedMaxVal = true;
-	},
+        var updateTimeout = null;
+        $(window).scroll(function(event) {
+            if( settings.animating === false ) {
+                clearTimeout(updateTimeout);
+                updateTimeout = setTimeout(updateCounter, 1000);
+            }
+        });
 
-	updateCounter = function(){
-		settings.counter = $(window).scrollTop() / settings.offset;
-	},
+        keyboard();
 
-	doScroll = function(){
-		clearTimeout(settings.scrolling);
-		settings.scrolling = setTimeout(function(){
-			settings.animating = true;
-			$(settings.animateTriggerElem).stop().animate({ 
-				scrollTop: settings.counter * settings.offset 
-			}, settings.speed, 
-			function(){ 
-				settings.tempPos = settings.counter; 
-				settings.animating = false;
-			});
-		}, settings.animTimeOut);
-	},
+    },
 
-	isChrome = function(){
-		return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-	},
+    updateMaxVal = function(){
+        settings.maxVal = $(document).height() < $(window).height() ? $(window).height() : $(document).height();
+        settings.updatedMaxVal = true;
+    },
 
-	keyboard = function(){
-		$(settings.mainTriggerElem).keydown(function (e) {
-		    switch (e.which) {
-		        case 38:
-		            $(settings.animateTriggerElem).stop().animate({
-		                scrollTop: $(window).scrollTop() - settings.offset * 2
-		            }, settings.speed);
-		            break;
+    updateCounter = function(){
+        settings.counter = $(window).scrollTop() / settings.offset;
+    },
 
-		        case 40:
-		            $(settings.animateTriggerElem).stop().animate({
-		                scrollTop: $(window).scrollTop() + settings.offset * 2
-		            }, settings.speed);
-		            break;
-		    }
-		    
-		    if(e.which == 38 || e.which == 40) return false;
-		});
-	};
+    doScroll = function(){
+        settings.animating = true;
+        $(settings.animateTriggerElem).stop().animate({
+            scrollTop: settings.counter * settings.offset
+        }, settings.speed,
+        function(){
+            settings.tempPos = settings.counter;
+            settings.animating = false;
+        });
 
-	return { init : init };
+        ticking = false;
+    },
+
+    isChrome = function(){
+        return navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+    },
+
+    keyboard = function(){
+        $(settings.mainTriggerElem).keydown(function (e) {
+            switch (e.which) {
+                case 38:
+                    $(settings.animateTriggerElem).stop().animate({
+                        scrollTop: $(window).scrollTop() - settings.offset * 2
+                    }, settings.speed);
+                    break;
+
+                case 40:
+                    $(settings.animateTriggerElem).stop().animate({
+                        scrollTop: $(window).scrollTop() + settings.offset * 2
+                    }, settings.speed);
+                    break;
+            }
+
+            if(e.which == 38 || e.which == 40) return false;
+        });
+    };
+
+    return { init : init };
 }();
+
+chromeSmoothScroll.init();

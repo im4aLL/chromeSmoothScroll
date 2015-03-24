@@ -1,18 +1,15 @@
 chromeSmoothScroll
 ==================
 
-Smooth scrolling for chrome browser
+Smooth scrolling for chrome browser (it's less than 2 KB)
 
 usage
 =====
 
+Just inlcude the js, you are done!
+
 ```
 <script src="path/to/chromeSmoothScroll.js"></script>
-<script>
-	jQuery(document).ready(function($) {
-		chromeSmoothScroll.init();
-	});
-</script>
 ```
 
 demo
@@ -22,8 +19,7 @@ http://habibhadi.com/demo/chromeSmoothScroll/
 
 Tips
 ====
-For macosx chrome browser scrolls smoothly by default. But if you run this function in macosx it will not work. To detect 
-OS you can use following code - 
+If you want to turn smooth scrolling for specific OS then you may try like this - 
 
 ```javascript
 var OS = {
@@ -42,7 +38,8 @@ var OS = {
 };
 
 
-if( OS.name() == 'windows' ) chromeSmoothScroll.init();
+if( OS.name() == 'windows' ) {
+    // this function called at the end of the js file!
+    chromeSmoothScroll.init();
+}
 ```
-
-This plugin/ function is made for Chrome windows only!
